@@ -1,16 +1,18 @@
 CFLAGS= -g
 
 HEADER_FILES = src
-SOURCE_FILES =$(wildcard src/*.c)
 
-OBJECT_FILES = $(SOURCE_FILES:.c=.o)
+SRC =$(wildcard src/*.c)
 
-priv/c/echo: clean c_priv $(OBJECT_FILES)
-	mkdir -p priv/c
-	$(CC) -I $(HEADER_FILES) -o $@ $(LDFLAGS) $(OBJECT_FILES) $(LDLIBS)
+OBJ = $(SRC:.c=.o)
+
+DEFAULT_TARGETS ?= c_priv priv/c/echo
+
+priv/c/echo: c_priv $(OBJ)
+	$(CC) -I $(HEADER_FILES) -o $@ $(LDFLAGS) $(OBJ) $(LDLIBS)
 
 c_priv:
 	mkdir -p priv/c
 
 clean:
-	rm -f priv/c/echo $(OBJECT_FILES) $(BEAM_FILES)
+	rm -f priv/c $(OBJ) $(BEAM_FILES)

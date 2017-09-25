@@ -13,6 +13,11 @@ defmodule Porty do
 
   """
   def hello do
-    :world
+    __DIR__
+  end
+
+  def open_port do
+    Process.flag(:trap_exit, true)
+    Port.open({:spawn, :code.priv_dir(:porty) ++ '/c/echo'}, [{:packet, 2}])
   end
 end
