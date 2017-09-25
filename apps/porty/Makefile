@@ -5,12 +5,12 @@ SOURCE_FILES =$(wildcard src/*.c)
 
 OBJECT_FILES = $(SOURCE_FILES:.c=.o)
 
-c_priv/echo: clean c_priv $(OBJECT_FILES)
-	mkdir -p c_priv
+priv/c/echo: clean c_priv $(OBJECT_FILES)
+	mkdir -p priv/c
 	$(CC) -I $(HEADER_FILES) -o $@ $(LDFLAGS) $(OBJECT_FILES) $(LDLIBS)
 
 c_priv:
-	mkdir -p c_priv
+	mkdir -p priv/c
 
 clean:
-	rm -f c_priv/echo $(OBJECT_FILES) $(BEAM_FILES)
+	rm -f priv/c/echo $(OBJECT_FILES) $(BEAM_FILES)
