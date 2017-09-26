@@ -4,12 +4,13 @@
 #include <string.h>
 #include <unistd.h>
 #include <poll.h>
+#include <stdio.h>
 
 void write_back(char* msg);
 int poll_input();
 void read_in(char *buffer, int len);
 int to_read_length();
-void write_out(char* msg, int len, char * reason);
+void write_fixed(char* msg, int len, char * reason);
 
 #define MAX_READ 1023
 
@@ -22,8 +23,8 @@ int main(int argc, char *argv[]) {
       int len = to_read_length();
       if (len > MAX_READ) {err(EXIT_FAILURE, "Too large message to read.");}
 
-      // A zero length message is sent when the port closes.
-      if (len == 0) return 1;
+      // len being less than zero indicates STDIN has been closed - exit
+      if (len < 0) {return 1;}
 
       read_in(buffer, len);
       write_back(buffer);
@@ -31,15 +32,19 @@ int main(int argc, char *argv[]) {
   }
 }
 
-void write_out(char *msg, int len, char *reason) {
+/**
+ * Write a len characters, pointed to by msg, to STDIN. The reason is used
+ * as debug information should the write fail.
+ */
+void write_fixed(char *msg, int len, char *reason) {
   int written = 0;
-  do {
+  while(written < len) {
     int this_write = write(STDOUT_FILENO,  msg + written, len - written);
-    if (this_write < 0 && errno != EINTR) {
+    if (this_write <= 0 && errno != EINTR) {
       err(EXIT_FAILURE, "%s: %d", reason, this_write);
     }
     written += this_write;
-  } while (written < len);
+  }
 }
 
 /**
@@ -48,8 +53,32 @@ void write_out(char *msg, int len, char *reason) {
 void write_back(char* msg) {
   unsigned long len = strlen(msg);
   char size_header[2] = {(len >> 8 & 0xff), (len & 0xff)};
-  write_out(size_header, 2, "header write");
-  write_out(msg, len, "data write");
+  write_fixed(size_header, 2, "header write");
+  write_fixed(msg, len, "data write");
+}
+
+
+/**
+ * Reads len chars from STDIN to buffer. Returns len if successful, or -1 if STDIN has been closed
+ *
+ */
+int read_fixed(char* buffer, int len) {
+  int read_count = 0;
+  while(read_count < len) {
+    int this_read = read(STDIN_FILENO, buffer + read_count, len - read_count);
+
+    // 0 is returned from read if EOF is STDIN has been closed.
+    if (this_read == 0) {
+      return -1;
+    }
+
+    // errno is set to EINTR if interrrupted by a signal before any data is sent.
+    if(this_read < 0 && errno != EINTR) {
+      err(EXIT_FAILURE, "read failed");
+    }
+    read_count += this_read;
+  }
+  return len;
 }
 
 /**
@@ -69,11 +98,14 @@ void read_in(char *buffer, int len) {
 
 /**
  * The first two bytes indicates the length of the message, with the first byte being most significant.
- * Read this and return as an int.
+ * Read this and return as an int. Returns -1 if STDIN is closed
  **/
 int to_read_length() {
-  unsigned char size_header[2] = {0, 0};
-  read(STDIN_FILENO, size_header, 2);
+  unsigned char size_header[2];
+  int r = read_fixed((char *) size_header, 2);
+  if(r < 0) {
+    return -1;
+  }
   return (size_header[0] << 8) | size_header[1];
 }
 
