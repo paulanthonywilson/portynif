@@ -15,4 +15,4 @@ c_priv:
 	mkdir -p priv/c
 
 clean:
-	rm -f priv/c $(OBJ) $(BEAM_FILES)
+	rm -rf priv/c ${OBJ}
