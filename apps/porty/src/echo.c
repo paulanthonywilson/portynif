@@ -6,11 +6,11 @@
 #include <poll.h>
 #include <stdio.h>
 
-void write_back(char* msg);
+void write_back(char *msg);
 int poll_input();
 void read_in(char *buffer, int len);
 int to_read_length();
-void write_fixed(char* msg, int len, char * reason);
+void write_fixed(char *msg, int len, char *reason);
 
 #define MAX_READ 1023
 
@@ -50,7 +50,7 @@ void write_fixed(char *msg, int len, char *reason) {
 /**
  * Send the zero-terminated msg back the BEAM by writing to stdout.
  */
-void write_back(char* msg) {
+void write_back(char *msg) {
   unsigned long len = strlen(msg);
   char size_header[2] = {(len >> 8 & 0xff), (len & 0xff)};
   write_fixed(size_header, 2, "header write");
@@ -62,7 +62,7 @@ void write_back(char* msg) {
  * Reads len chars from STDIN to buffer. Returns len if successful, or -1 if STDIN has been closed
  *
  */
-int read_fixed(char* buffer, int len) {
+int read_fixed(char *buffer, int len) {
   int read_count = 0;
   while(read_count < len) {
     int this_read = read(STDIN_FILENO, buffer + read_count, len - read_count);
@@ -81,7 +81,7 @@ int read_fixed(char* buffer, int len) {
   return len;
 }
 
-/**
+/* *
  * Read len number of bytes from the stream and populate the buffer. Zero-terminates the buffer.
  **/
 void read_in(char *buffer, int len) {
@@ -102,7 +102,7 @@ void read_in(char *buffer, int len) {
  **/
 int to_read_length() {
   unsigned char size_header[2];
-  int r = read_fixed((char *) size_header, 2);
+  int r = read_fixed((char*) size_header, 2);
   if(r < 0) {
     return -1;
   }
