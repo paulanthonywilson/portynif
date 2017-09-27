@@ -1,6 +1,6 @@
 defmodule Porty.Echo do
   @moduledoc """
-  Uses a port to echoe back messages to subscribed processes.
+  Uses a port to echo back messages to subscribed processes.
   """
 
   use GenServer
@@ -16,10 +16,20 @@ defmodule Porty.Echo do
     {:ok, port}
   end
 
+  @doc """
+  Process receives echoes with the signature
+  `{:echo, String.t}`
+  """
+  @spec subscribe :: {:ok, pid} | {:error, {:already_registered, pid}}
   def subscribe do
     Registry.register(:event_registry, :echo, [])
   end
 
+  @doc """
+  Send the msg to the port. It is echoed back, turned into a binary, and sent
+  to any subscribers.
+  """
+  @spec say(String.t) :: :ok
   def say(msg) do
     GenServer.cast(@name, {:say, msg})
     :ok

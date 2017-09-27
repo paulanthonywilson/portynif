@@ -1,3 +1,12 @@
 # Portynif
 
-Stuff for messing around with super simple Ports and NIFs for C extensions. Based very much on https://github.com/asbaker/elixir-interop-examples but even simpler. Also getting hints from how https://github.com/fhunleth/elixir_ale works.
+Stuff for messing around with super simple Ports and NIFs for C extensions. Or right now, [just Ports](apps/porty).
+
+## Running
+
+This is Elixir (1.5.x), so you know the drill.
+
+```
+mix deps.get
+mix test
+```
