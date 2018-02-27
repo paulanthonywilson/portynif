@@ -4,7 +4,7 @@ defmodule Portynif.Mixfile do
   def project do
     [
       apps_path: "apps",
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -16,8 +16,8 @@ defmodule Portynif.Mixfile do
   # Run "mix help deps" for examples and options.
   defp deps do
     [
-      {:credo, "~> 0.8.6"},
-      {:dialyxir, ">= 0.5.1"},
+      {:credo, "~> 0.8"},
+      {:dialyxir, "~> 0.5"}
     ]
   end
 end

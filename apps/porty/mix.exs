@@ -9,9 +9,9 @@ defmodule Porty.Mixfile do
       config_path: "../../config/config.exs",
       deps_path: "../../deps",
       lockfile: "../../mix.lock",
-      compilers: [:elixir_make | Mix.compilers],
-      elixir: "~> 1.5",
-      start_permanent: Mix.env == :prod,
+      compilers: [:elixir_make | Mix.compilers()],
+      elixir: "~> 1.6",
+      start_permanent: Mix.env() == :prod,
       deps: deps()
     ]
   end
@@ -25,7 +25,7 @@ defmodule Porty.Mixfile do
 
   defp deps do
     [
-      {:elixir_make, "~> 0.4"},
+      {:elixir_make, "~> 0.4"}
     ]
   end
 end
